@@ -1,0 +1,60 @@
+location /usr {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	#
+	# user management
+	#
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$eml $arg_eml;
+	postgres_escape		$key $arg_key;
+	postgres_escape		$val $arg_val;
+	postgres_escape		$atr $arg_atr;
+
+	# get user profile
+	postgres_query		GET	"select zfn_usr_get($ses)";
+	postgres_rewrite	GET	no_rows 410;
+
+	# update user profile
+	postgres_query		PUT	"select zfn_usr_set($ses, $eml, $key, $val)";
+	postgres_rewrite	PUT	no_rows 410;
+
+	# add user (POST needed for large DATA [B64 IMGs])
+	postgres_query		POST	"select zfn_usr_set($ses, $eml, $key, $val)";
+	postgres_rewrite	POST	no_rows 410;
+
+	# add user (POST changed to PATCH !)
+	postgres_query		PATCH	"select zfn_usr_add($ses, $eml)";
+	postgres_rewrite	PATCH	no_rows 410;
+
+	# delete user
+	postgres_query		DELETE	"select zfn_usr_del($ses, $eml, $atr)";
+	postgres_rewrite	DELETE	no_rows 410;
+
+}
+
+location /usr/new {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	#
+	# intranet only ( new user )
+	#
+	postgres_escape		$auth $arg_auth; # db_sevice password
+	postgres_escape		$ncli $arg_ncli; # num_client integer
+
+	postgres_escape		$eml $arg_eml;
+
+	#if ( $remote_addr = $DA ) {
+		#if ( $auth = "bed0f93c-d0f4-4407-b983-9480560690d8" ) {
+			postgres_query		POST	"select zfn_usr_new($auth, $ncli, $eml)";
+			postgres_rewrite	POST	no_rows 410;
+		#}
+	#}
+
+}

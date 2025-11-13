@@ -1,0 +1,64 @@
+location /hldr {
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth	$arg_auth;
+	postgres_escape		$pag	$arg_pag;
+	postgres_escape		$rpp	$arg_rpp;
+
+	postgres_query		GET	"select fn_hst_hldr_get($auth, $pag)";
+	postgres_rewrite	GET	no_rows 410;
+
+	default_type "text/xml";
+}
+location /hldw {
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth	$arg_auth;
+	postgres_escape		$uid	$arg_uid;
+	postgres_escape		$note	$arg_note;
+
+	postgres_query		GET	"select fn_hst_hldr_set($auth, $uid, $note)";
+	postgres_rewrite	GET	no_rows 410;
+
+	default_type "text/plain";
+}
+
+location /hld1 {
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth	$arg_auth;
+	postgres_escape		$uid	$arg_uid;
+
+	postgres_query		GET	"select fn_hst_hldr_one($auth, $uid)";
+	postgres_rewrite	GET	no_rows 410;
+
+	default_type "text/xml";
+}
+location /hld2 {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_connect_timeout 300s;
+	postgres_result_timeout 300s;
+
+	postgres_escape		$auth	$arg_auth;
+	postgres_escape		$hst	$arg_hst;
+	postgres_escape		$tool	$arg_tool;
+	postgres_escape		$dest	$arg_dest;
+	postgres_escape		$styl	$arg_styl;
+	postgres_escape		$para	$arg_para;
+	postgres_escape		$prpt	$arg_prpt;
+
+	postgres_query		GET	"select fn_hst_hldr_two($auth, $hst, $tool, $dest, $styl, $para, $prpt)";
+	postgres_rewrite	GET	no_rows 410;
+
+	default_type "text/plain";
+}

@@ -1,0 +1,205 @@
+location /anns {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$jsn $arg_jsn;
+	postgres_query		POST	"select fn_search($ses, $jsn)";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/unhide {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_query		POST	"select fn_anns_unhide($ses, $aux)";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/raps {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$dt1 $arg_date_from;
+	postgres_escape		$dt2 $arg_date_to;
+	postgres_query		GET	"select fn_get_raps($ses, $dt1, $dt2)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/prps {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses	$arg_ses;
+	postgres_escape		$sts	$arg_sts;
+	postgres_escape		$ord_b	$arg_orderer;
+	postgres_escape		$ord_d	$arg_order;
+	postgres_escape		$pag	$arg_pag;
+	postgres_escape		$ppp	$arg_ppp;
+	postgres_query		GET	"select fn_get_prps($ses, $sts, $ord_b, $ord_d, $pag, $ppp)";
+	postgres_rewrite	GET	no_rows 410;
+}
+
+location /anns/vent {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$jsn $arg_jsn;
+	postgres_query		POST	"select fn_search($ses, $jsn)";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/vent/day {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'VENT', 'DAY', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/vent/week {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'VENT', 'WEEK', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/vent/month {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'VENT', 'MONTH', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/vent/hidden {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_hidden($ses, 'VENT', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/vent/unhide {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_query		POST	"select fn_anns_unhide($ses, 'VENT')";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/vent/rap {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_status($ses, 'LOCA', 'R', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/vent/rdv {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_status($ses, 'LOCA', 'Z', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+
+location /anns/loca {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$jsn $arg_jsn;
+	postgres_query		POST	"select fn_search($ses, $jsn)";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/loca/day {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'LOCA', 'DAY', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/loca/week {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'LOCA', 'WEEK', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/loca/month {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_interval($ses, 'LOCA', 'MONTH', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/loca/hidden {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_hidden($ses, 'LOCA', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/loca/unhide {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_query		POST	"select fn_anns_unhide($ses, 'LOCA')";
+	postgres_rewrite	POST	no_rows 410;
+}
+location /anns/loca/rap {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_status($ses, 'LOCA', 'R', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /anns/loca/rdv {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_query		GET	"select fn_search_status($ses, 'LOCA', 'Z', $pag)";
+	postgres_rewrite	GET	no_rows 410;
+}

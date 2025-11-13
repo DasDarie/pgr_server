@@ -1,0 +1,26 @@
+location /ses {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	#
+	# session : login / logout
+	#
+
+	postgres_escape		$usr $arg_usr;
+	postgres_escape		$pwd $arg_pwd;
+
+	postgres_escape		$adr $remote_addr;
+	postgres_escape		$ref $http_referer;
+	postgres_escape		$uag $http_user_agent;
+
+	# login
+	postgres_query		POST	"select zfn_ses_login($usr, $pwd, $adr, $ref, $uag)";
+	postgres_rewrite	POST	no_rows 410;
+
+	# logout
+	postgres_escape		$uid $arg_uid;
+	postgres_query		DELETE	"select zfn_ses_logout($uid)";
+	postgres_rewrite	DELETE	no_rows 410;
+}

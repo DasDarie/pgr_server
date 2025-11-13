@@ -1,0 +1,41 @@
+location /dpe/getListe {
+    add_header Content-Type "application/json";
+    include /etc/nginx/conf.d/cors.cnf;
+
+    postgres_pass geo;
+    postgres_output text;
+    rds_json off;
+
+    # ---- Querystring args (both legacy and new) ----
+    # session id (support both ?sessionID=... and ?sessionid=...)
+    postgres_escape         $sessID_uc   $arg_sessionID;
+    postgres_escape         $sessID_lc   $arg_sessionid;
+
+    # pagination
+    postgres_escape         $page        $arg_page;
+    postgres_escape         $page_size   $arg_page_size;
+
+    # optional filters / sorting
+    postgres_escape         $postcode    $arg_postcode;
+    postgres_escape         $sort_by     $arg_sort_by;
+    postgres_escape         $sort_dir    $arg_sort_dir;
+
+    # (optional) quick guard: if no session id provided at all, return 400
+    # if ($sessID_uc = "") { if ($sessID_lc = "") { return 400; } }
+
+    # Call the function. Use NULLIF to let the function apply its defaults.
+    # Coalesce lowercase/uppercase sessionID variants.
+    postgres_query HEAD GET "
+        SELECT fn_getclientdpes(
+            COALESCE(NULLIF($sessID_lc,''), NULLIF($sessID_uc,''))::text,
+            NULLIF($page,'')::int,
+            NULLIF($page_size,'')::int,
+            NULLIF($postcode,'')::text,
+            NULLIF($sort_by,'')::text,
+            NULLIF($sort_dir,'')::text
+        );
+    ";
+
+    error_page 405 = $request_uri;
+}
+

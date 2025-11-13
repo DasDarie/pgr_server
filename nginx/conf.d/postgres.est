@@ -1,0 +1,45 @@
+location /ests {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses	$arg_ses;
+	postgres_escape		$est	$arg_est;
+	postgres_escape		$dat	$arg_dat;
+
+	# get liste estimations
+	postgres_query		GET	"select fn_est_all($ses)";
+	postgres_rewrite	GET	no_rows 410;
+}
+
+location /est {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses	$arg_ses;
+	postgres_escape		$est	$arg_est;
+	postgres_escape		$dat	$arg_dat;
+
+	# get one estimation
+	postgres_query		GET	"select fn_est_get($ses, $est)";
+	postgres_rewrite	GET	no_rows 410;
+
+	# new estimation
+	postgres_query		POST	"select fn_est_new($ses)";
+	postgres_rewrite	POST	no_rows 410;
+
+	# set estimation
+	postgres_query		PUT	"select fn_est_set($ses, $est, $dat)";
+	postgres_rewrite	PUT	no_rows 410;
+
+	# del one estimation
+	postgres_query		DELETE	"select fn_est_del($ses, $est)";
+	postgres_rewrite	DELETE	no_rows 410;
+
+	# execute / generate estimation
+	postgres_query		PATCH	"select fn_est_exe($ses, $est)";
+	postgres_rewrite	PATCH	no_rows 410;
+}

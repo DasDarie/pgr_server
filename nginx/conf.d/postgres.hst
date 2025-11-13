@@ -1,0 +1,131 @@
+location ~ "^/hst/([a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}).jpg$" {
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_pass pgr;
+
+	postgres_query "select img from img_stage where uid = '$1'::uuid limit 1";
+	postgres_output binary_value;
+	postgres_rewrite no_rows 404;
+
+	default_type image/jpeg;
+	add_header Content-Type "image/jpeg";
+
+	add_header ETag $1;
+	add_header Cache-Control "public, max-age31536000, immutable";
+}
+
+location /hst {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+
+	postgres_query		GET	"select fn_hst_credits($ses)";
+	postgres_rewrite	GET	no_rows 410;
+}
+
+location /hst/do {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$ann $arg_ann;
+	postgres_escape		$url $arg_url;
+	postgres_escape		$dest $arg_dest;
+	postgres_escape		$styl $arg_styl;
+
+	postgres_connect_timeout 300s;
+	postgres_result_timeout 300s;
+
+	postgres_query		GET	"select fn_hst_perform($ses, $ann, $url, $dest, $styl)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /hst/inc {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth $arg_auth;
+	postgres_escape		$cli $arg_cli;
+	postgres_escape		$credits $arg_credits;
+
+	postgres_query		GET	"select fn_hst_increment($auth, $cli, $credits)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /hst/dec {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth $arg_auth;
+	postgres_escape		$cli $arg_cli;
+	postgres_escape		$credits $arg_credits;
+
+	postgres_query		GET	"select fn_hst_decrement($auth, $cli, $credits)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /hst/set {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth $arg_auth;
+	postgres_escape		$cli $arg_cli;
+	postgres_escape		$credits $arg_credits;
+
+	postgres_query		GET	"select fn_hst_credits($auth, $cli, $credits)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /hst/get {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$auth $arg_auth;
+	postgres_escape		$cli $arg_cli;
+
+	postgres_query		GET	"select fn_hst_credits($auth, $cli)";
+	postgres_rewrite	GET	no_rows 410;
+}
+
+location /hst/anns {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$pag $arg_pag;
+	postgres_escape		$obj $arg_obj;
+	postgres_escape		$ord $arg_ord;
+	postgres_escape		$dir $arg_dir;
+	postgres_escape		$dt1 $arg_dt1;
+	postgres_escape		$dt2 $arg_dt2;
+
+	postgres_query		GET	"select fn_hst_anns($ses, $pag, $obj, $ord, $dir, $dt1, $dt2)";
+	postgres_rewrite	GET	no_rows 410;
+}
+location /hst/ann {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$ann $arg_ann;
+	postgres_escape		$hst $arg_hst;
+	postgres_escape		$not $arg_note;
+
+	postgres_query		GET	"select fn_hst_ann($ses, $ann)";
+	postgres_rewrite	GET	no_rows 410;
+
+	postgres_query		PUT	"select fn_hst_not($ses, $hst, $not)";
+	postgres_rewrite	PUT	no_rows 410;
+}

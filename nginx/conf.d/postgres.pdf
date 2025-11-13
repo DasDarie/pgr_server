@@ -1,0 +1,35 @@
+location /pdf-proxy/ {
+    # Remove the /pdf-proxy prefix and proxy to the HTTP server
+    rewrite ^/pdf-proxy/(.*)$ /$1 break;
+    
+    # Proxy to the HTTP PDF server
+    proxy_pass http://dev.directmandat.com;
+    
+    # Important headers
+    proxy_set_header Host dev.directmandat.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Allow larger file sizes for PDFs
+    client_max_body_size 50M;
+    
+    # Timeouts for PDF generation (may take time)
+    proxy_connect_timeout 300s;
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+    
+    # Disable buffering for streaming PDFs
+    proxy_buffering off;
+    
+    # CORS headers if needed (adjust as necessary)
+    add_header Access-Control-Allow-Origin * always;
+    add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept" always;
+    
+    # Handle OPTIONS preflight
+    if ($request_method = OPTIONS) {
+        return 204;
+    }
+}
+

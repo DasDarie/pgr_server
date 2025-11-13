@@ -1,0 +1,58 @@
+location /dpe/getListe {
+    add_header Content-Type "application/json";
+    include /etc/nginx/conf.d/cors.cnf;
+
+    postgres_pass geo;
+    postgres_output text;
+    rds_json off;
+
+    # ---- Querystring args (legacy + new) ----
+    # session id (support both ?sessionID=... and ?sessionid=...)
+    postgres_escape         $sessID_uc   $arg_sessionID;
+    postgres_escape         $sessID_lc   $arg_sessionid;
+
+    # pagination
+    postgres_escape         $page        $arg_page;
+    postgres_escape         $page_size   $arg_page_size;
+
+    # optional sorting / single postcode filter
+    postgres_escape         $postcode    $arg_postcode;
+    postgres_escape         $sort_by     $arg_sort_by;
+    postgres_escape         $sort_dir    $arg_sort_dir;
+
+    # ---- NEW optional filters ----
+    # date filter: '7d', '30d', or 'all'
+    postgres_escape         $date_filter     $arg_date_filter;
+
+    # building type filter: comma-separated list (e.g. maison,appartement)
+    postgres_escape         $type_batiment   $arg_type_batiment;
+
+    # multiple postal codes: comma-separated list (e.g. 75001,75002)
+    postgres_escape         $postcodes       $arg_postcodes;
+
+    # (optional) quick guard: if no session id provided at all, return 400
+    # if ($sessID_uc = "") { if ($sessID_lc = "") { return 400; } }
+
+    # Call the SQL function (use NULLIF to preserve defaults)
+    postgres_query HEAD GET "
+        SELECT fn_getclientdpes(
+            COALESCE(NULLIF($sessID_lc,''), NULLIF($sessID_uc,''))::text,
+            NULLIF($page,'')::int,
+            NULLIF($page_size,'')::int,
+            NULLIF($postcode,'')::text,
+            NULLIF($sort_by,'')::text,
+            NULLIF($sort_dir,'')::text,
+            NULLIF($date_filter,'')::text,
+            -- convert comma-separated strings into text arrays safely
+            CASE WHEN NULLIF($type_batiment,'') IS NULL THEN NULL
+                 ELSE string_to_array($type_batiment, ',')
+            END::text[],
+            CASE WHEN NULLIF($postcodes,'') IS NULL THEN NULL
+                 ELSE string_to_array($postcodes, ',')
+            END::text[]
+        );
+    ";
+
+    error_page 405 = $request_uri;
+}
+

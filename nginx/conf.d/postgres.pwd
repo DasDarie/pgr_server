@@ -1,0 +1,33 @@
+location /pwd {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	if ($request_method = OPTIONS) {
+	    return 200;
+	}
+
+	#
+	# new password request
+	#
+	postgres_escape		$eml $arg_eml;
+	postgres_escape		$url $http_origin;
+	postgres_query		PUT	"select zfn_pwd_rst($url, $eml)";
+	postgres_rewrite	PUT	no_rows 410;
+	
+	#
+	# new password record
+	#
+	postgres_escape		$uid $arg_uid;
+	postgres_escape		$pwd $arg_pwd;
+	postgres_query		POST	"select zfn_pwd_new($uid, $pwd)";
+	postgres_rewrite	POST	no_rows 410;
+
+	#
+	# token check
+	#
+	postgres_escape		$uid $arg_uid;
+	postgres_query		HEAD	"select zfn_pwd_token($uid)";
+	postgres_rewrite	HEAD	no_rows 410;
+}

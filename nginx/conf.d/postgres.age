@@ -1,0 +1,43 @@
+location /age {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	#
+	# agence management
+	#
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$key $arg_key;
+	postgres_escape		$val $arg_val;
+
+	if ( $ses !~* "[\w]{8}(-[\w]{4}){3}-[\w]{12}" ){
+	    set $ses null;
+	}
+
+	# get agence profile
+	postgres_query		GET	"select zfn_age_get($ses)";
+	postgres_rewrite	GET	no_rows 410;
+
+	# set agence profile
+	postgres_query		PUT	"select zfn_age_set($ses, $key, $val)";
+	postgres_rewrite	PUT	no_rows 410;
+
+	# NEEDED FOR LARGE DATA ( B64 IMGs )
+	postgres_query		POST	"select zfn_age_set($ses, $key, $val)";
+	postgres_rewrite	POST	no_rows 410;
+
+	#
+	# intranet only ( new age ) WARNING !!! NOT OK / NOT NEEDED
+	#
+	postgres_escape		$auth $arg_auth; # db_sevice password
+	postgres_escape		$ncli $arg_ncli; # num_client integer
+	#if ( $remote_addr = $DA ) {
+		if ( $arg_auth = $PW ) {
+			# new agence
+			postgres_query		PATCH	"select zfn_age_new($auth, $ncli)";
+			postgres_rewrite	PATCH	no_rows 410;
+		}
+	#}
+}

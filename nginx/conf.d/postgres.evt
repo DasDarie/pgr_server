@@ -1,0 +1,62 @@
+location /agenda {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$d1 $arg_d1;
+	postgres_escape		$d2 $arg_d2;
+
+	postgres_query		GET		"select fn_agenda_get($ses, $d1, $d2)";
+	postgres_rewrite	GET		no_rows 410;
+
+	postgres_query		POST		"select fn_agenda_set($ses, $d1, $d2)";
+	postgres_rewrite	POST		no_changes 410;
+
+	postgres_query		DELETE		"select fn_agenda_del($ses, $d1, $d2)";
+	postgres_rewrite	DELETE		no_changes 410;
+}
+
+location /events {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$ann $arg_ann;
+	postgres_escape		$evt $arg_evt;
+	postgres_escape		$typ $arg_typ;
+
+	postgres_escape		$d1 $arg_d1;
+	postgres_escape		$d2 $arg_d2;
+
+	postgres_escape		$dt $arg_dt;
+
+	postgres_escape		$t1 $arg_t1;
+	postgres_escape		$t2 $arg_t2;
+
+	postgres_escape		$tit $arg_tit;
+	postgres_escape		$txt $arg_txt;
+
+	postgres_escape		$rap $arg_rap;
+	postgres_escape		$loc $arg_loc;
+	postgres_escape		$lat $arg_lat;
+	postgres_escape		$lon $arg_lon;
+
+	postgres_query		GET		"select fn_event_get($ses, $d1, $d2, $typ)";
+	postgres_rewrite	GET		no_rows 410;
+
+	postgres_query		POST		"select fn_event_set($ses, $ann, $tit, $dt, $t1, $t2, $rap, $loc, $lat, $lon, $txt, $typ)";
+	postgres_rewrite	POST		no_changes 410;
+
+	postgres_query		PUT		"select fn_event_upd($ses, $evt, $ann, $tit, $dt, $t1, $t2, $rap, $loc, $lat, $lon, $txt, $typ)";
+	postgres_rewrite	PUT		no_changes 410;
+
+	postgres_query		DELETE		"select fn_event_del($ses, $evt)";
+	postgres_rewrite	DELETE		no_changes 410;
+
+	postgres_query		PATCH		"select fn_event_tog($ses, $evt)";
+	postgres_rewrite	PATCH		no_changes 410;
+}

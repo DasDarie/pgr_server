@@ -1,0 +1,156 @@
+location /ann {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$key $arg_key;
+	postgres_escape		$val $arg_val;
+
+	postgres_query		GET		"select fn_ann_get($ses, $aux)";
+	postgres_rewrite	GET		no_rows 410;
+
+	postgres_query		PUT		"select fn_ann_set($ses, $aux, $key, $val)";
+	postgres_rewrite	PUT		no_changes 410;
+
+	postgres_query		DELETE		"select fn_ann_set($ses, $aux, 'aux_deleted', 'true')";
+	postgres_rewrite	DELETE		no_changes 410;
+
+	postgres_query		PATCH		"select fn_ann_set($ses, $aux, 'aux_deleted', 'false')";
+	postgres_rewrite	PATCH		no_changes 410;
+}
+
+location /ann/attrib {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$val $arg_val;
+
+	postgres_query		PUT		"select fn_ann_set($ses, $aux, 'aux_attrib', $val)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+location /ann/status {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$val $arg_val;
+
+	postgres_query		PUT		"select fn_ann_set($ses, $aux, 'aux_sts_cur', $val)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+location /ann/stabilo {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$val $arg_val;
+
+	postgres_query		PUT		"select fn_ann_set($ses, $aux, 'aux_stabilo', $val)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+
+location /ann/prp {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses	$arg_ses;
+	postgres_escape		$aux	$arg_aux;
+	postgres_query		PUT		"select fn_ann_set_prp($ses, $aux)";
+	postgres_rewrite	PUT		no_changes 410;
+
+	postgres_escape		$auth	$arg_auth;
+	postgres_escape		$cli	$arg_cli;
+	postgres_escape		$ann	$arg_ann;
+	postgres_escape		$sts	$arg_sts;
+	postgres_escape		$dat	$arg_dat;
+	postgres_escape		$sbj	$arg_sbj;
+	postgres_escape		$msg	$arg_msg;
+	postgres_escape		$uid	$arg_uid;
+	postgres_query		GET		"select fn_prp_update($auth, $cli, $ann, $sts, $dat, $sbj, $msg)";
+	postgres_rewrite	GET		no_changes 410;
+
+}
+location /ann/rap {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$dat $arg_dat;
+	postgres_escape		$tit $arg_tit;
+	postgres_escape		$txt $arg_txt;
+	postgres_query		PUT		"select fn_ann_set_sts($ses, $aux, 'R', $dat, $tit, $txt)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+location /ann/rdv {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+	postgres_escape		$dat $arg_dat;
+	postgres_escape		$tit $arg_tit;
+	postgres_escape		$txt $arg_txt;
+	postgres_query		PUT		"select fn_ann_set_sts($ses, $aux, 'Z', $dat, $tit, $txt)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+
+location /ann/edit {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+
+	postgres_escape		$pie $arg_pie;
+	postgres_escape		$sur $arg_sur;
+	postgres_escape		$pri $arg_pri;
+	postgres_escape		$adr $arg_adr;
+	postgres_escape		$cp $arg_cp;
+	postgres_escape		$co $arg_co;
+	postgres_escape		$tel $arg_tel;
+
+	postgres_query		PUT		"select fn_ann_set_array($ses, $aux, 'ann_nbpieces',$pie, 'ann_surface',$sur, 'ann_prix',$pri, 'aux_adresse',$adr, 'ann_cp',$cp, 'ann_ville',$co, 'p_telephone',$tel)";
+	postgres_rewrite	PUT		no_changes 410;
+}
+location /ann/crits {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$aux $arg_aux;
+
+	postgres_escape		$typ $arg_typ;
+	postgres_escape		$sur $arg_sur;
+	postgres_escape		$pie $arg_pie;
+	postgres_escape		$asc $arg_asc;
+	postgres_escape		$eta $arg_eta;
+	postgres_escape		$cha $arg_cha;
+	postgres_escape		$ets $arg_ets;
+	postgres_escape		$sdb $arg_sdb;
+	postgres_escape		$par $arg_par;
+
+	postgres_query		PUT		"select fn_ann_set_array($ses, $aux, 'ann_type',$typ, 'aux_carrez',$sur, 'ann_nbpieces',$pie, 'aux_ascenseur',$asc, 'aux_etage_bien',$eta, 'aux_nbchambres',$cha, 'aux_etages_immeuble',$ets, 'aux_nbsdb',$sdb, 'aux_nbppk',$par)";
+	postgres_rewrite	PUT		no_changes 410;
+}

@@ -1,0 +1,28 @@
+location ~ "^/img/([a-z\d]{8}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{4}-[a-z\d]{12}).jpg$" {
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_pass pgr;
+
+	postgres_query "select img from img_cache where uid = '$1'::uuid limit 1";
+	postgres_output binary_value;
+	postgres_rewrite no_rows 404;
+
+	default_type image/jpeg;
+	add_header Content-Type "image/jpeg";
+
+	add_header ETag $1;
+	add_header Cache-Control "public, max-age31536000, immutable";
+}
+
+location /img {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ann	$arg_ann;
+	postgres_escape		$url	$arg_url;
+	postgres_escape		$img	$arg_img;
+
+	postgres_query		POST	"select fn_img_cache($ann, $url, $img)";
+	postgres_rewrite	POST	no_rows 410;
+}

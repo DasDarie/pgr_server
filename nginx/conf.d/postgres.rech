@@ -1,0 +1,15 @@
+location /rech {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
+
+	postgres_escape		$ses $arg_ses;
+	postgres_escape		$nom $arg_nom;
+
+	postgres_query		GET	"select fn_search_get($ses)";
+	postgres_rewrite	GET	no_rows 410;
+
+	postgres_query		DELETE	"select fn_search_del($ses, $nom)";
+	postgres_rewrite	DELETE	no_rows 410;
+}

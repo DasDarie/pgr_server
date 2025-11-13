@@ -1,0 +1,39 @@
+body {
+  background-color: floralwhite;
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  width: 90%;
+  margin: 0px auto;
+}
+
+caption {
+  caption-side: bottom;
+  text-align: left;
+}
+
+th {
+  font-size: 30px;
+}
+
+img {
+  max-height: 640px;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover, a:visited:hover {
+  text-decoration: underline;
+}
+
+iframe {
+  display: none;
+}
+
+form {
+  cursor: pointer;
+}
