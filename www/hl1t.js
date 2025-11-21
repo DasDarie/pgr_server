@@ -44,7 +44,7 @@ function jsonFormat(jsonString) {
 }
 
 const open = '{"prompt":"@PRPT","n":1,"size":"1536x1024","quality":"high","model":"gpt-image-1","output_format":"jpeg","input_fidelity":"high"}';
-const goog = '{}';
+const goog = '{"generationConfig":{"responseModalities":["Image"],"imageConfig":{"aspectRatio":"16:9"}},"contents":[{"parts":[{"text":"@PRPT"},{"inline_data":{"mime_type":"image/jpeg","data":"@JPEG"}}]}]}';
 const grok = '{}';
 /*
 const prompts = [
@@ -118,6 +118,7 @@ function exec(){
 
   link = stripSpaces(link);
   console.log(link);
+
   if ( params.length < 5 || prpt.length < 5 ) {
     alert("Les params ou le prompt ne peuvent pas être vides !");
     return;
