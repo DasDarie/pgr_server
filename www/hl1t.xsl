@@ -23,9 +23,9 @@
                 <label for="tool">AITOOL</label><br />
                 <select name="tool" id="tool">
                   <option value="OPEN" selected="selected">ChatGPT</option>
-                  <option value="GOOG">NanoBanana</option>
-                  <option value="GROK">Grok.X</option>
-                </select><br /><br /><br />
+                  <option value="NNBN">NanoBanana</option>
+                  <option value="GMN3">Gemini 3.0</option>
+                </select><br /><br />
 
                 <label for="dest">DESTINATION</label><br />
                 <select name="dest" id="dest">
@@ -34,7 +34,7 @@
                   <option value="CHA">Chambre</option>
                   <option value="SLN">Salon</option>
                   <option value="SDB">Salle de bains</option>
-                </select><br /><br /><br />
+                </select><br /><br />
 
                 <label for="styl">STYLE</label><br />
                 <select name="styl" id="styl">
@@ -43,7 +43,15 @@
                   <option value="CLA">Classique</option>
                   <option value="MOD">Moderne</option>
                   <option value="MED">Méditerranéen</option>
-                </select><br /><br /><br />
+                </select><br /><br />
+
+                <label for="prpt">PROMPT</label><br />
+                <select name="prpt" id="prpt">
+                  <option value="0" selected="selected">initial</option>
+                  <option value="1">lumineux</option>
+                  <option value="2">rafraîchit</option>
+                  <option value="3">watermark</option>
+                </select><br /><br />
 
                 <button onclick="prep()">PREP</button>
                 &#160;
@@ -64,11 +72,13 @@
               </td>
               <td>
                 <textarea name="prompt" id="prompt" rows="20" cols="25"></textarea>
-<textarea id="prpt" style="display:none">***en respectant strictement la structure de la pièce***,
+<!--textarea id="prpt" style="display:none">
+***en respectant strictement la structure de la pièce***,
 
 transforme cette pièce en DESTINATION et
 
-refais le design intérieur en style DESIGN</textarea>
+refais le design intérieur en style DESIGN
+</textarea-->
               </td>
             </tr>
           </table>

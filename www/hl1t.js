@@ -46,7 +46,7 @@ function jsonFormat(jsonString) {
 const open = '{"prompt":"@PRPT","n":1,"size":"1536x1024","quality":"high","model":"gpt-image-1","output_format":"jpeg","input_fidelity":"high"}';
 const goog = '{"generationConfig":{"responseModalities":["Image"],"imageConfig":{"aspectRatio":"16:9"}},"contents":[{"parts":[{"text":"@PRPT"},{"inline_data":{"mime_type":"image/jpeg","data":"@JPEG"}}]}]}';
 const grok = '{}';
-/*
+
 const prompts = [
 `***en respectant strictement la structure de la pièce***,
 transforme cette pièce en DESTINATION et
@@ -58,8 +58,12 @@ refais le design intérieur en style lumineux DESIGN haut de gamme`
 ,
 `***en respectant strictement la structure de la pièce***,
 rafraîchit le design intérieur`
+,
+`***en respectant strictement la structure de la pièce***,
+transforme cette pièce en DESTINATION et
+refais le design intérieur en style DESIGN
+et elimine tout texte de type WATERMARK sur l'image générée`
 ]
-*/
 
 function stripSpaces(str){
   return str.replace(/\s+/g, ' ').trim();
@@ -69,16 +73,17 @@ function prep(){
   var params = open;
   var tool = document.getElementById("tool").value;
   switch ( tool ) {
-    case "GOOG":
-      params = goog;
+    case "OPEN":
+      params = open;
       break;
-    case "GROK":
-      params = grok;
+    default:
+      params = goog;
       break;
   }
   document.getElementById("params").value = jsonFormat(params);
 
-  var prompt = document.getElementById("prpt").value;
+  var prompt = document.getElementById("prpt").value.trim();
+      prompt = prompts[prompt];
 
   var dest = document.getElementById("dest").value;
   var dest_ = document.getElementById("dest").selectedOptions[0].text;
