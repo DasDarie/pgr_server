@@ -56,5 +56,23 @@ location /usr/new {
 			postgres_rewrite	POST	no_rows 410;
 		#}
 	#}
+}
+location /usr/all {
+	add_header content-type "application/json";
+	include /etc/nginx/conf.d/cors.cnf;
+	postgres_output text;
+	postgres_pass pgr;
 
+	#
+	# intranet only ( get list )
+	#
+	postgres_escape		$auth $arg_auth; # db_sevice password
+	postgres_escape		$ncli $arg_ncli; # num_client integer
+
+	#if ( $remote_addr = $DA ) {
+		#if ( $auth = "bed0f93c-d0f4-4407-b983-9480560690d8" ) {
+			postgres_query		GET	"select zfn_usr_all($auth, $ncli)";
+			postgres_rewrite	GET	no_rows 410;
+		#}
+	#}
 }
